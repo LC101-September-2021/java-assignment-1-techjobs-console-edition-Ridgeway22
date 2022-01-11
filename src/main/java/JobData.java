@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by LaunchCode
@@ -16,6 +17,9 @@ public class JobData {
     private static boolean isDataLoaded = false;
 
     private static ArrayList<HashMap<String, String>> allJobs;
+
+
+
 
     /**
      * Fetch list of all values from loaded data,
@@ -101,9 +105,9 @@ public class JobData {
 
         for (HashMap<String, String> row : allJobs) {
             for (Map.Entry<String, String> entry : row.entrySet()) {
-                String aValue = entry.getValue();
+                String aValue = entry.getValue().toLowerCase(Locale.ROOT);
                 if (aValue.contains(value)) {
-                    if(!valueJobs.contains(value)) {
+                    if(!valueJobs.contains(aValue)) {
                         valueJobs.add(row);
                     }
                 }
@@ -141,7 +145,7 @@ public class JobData {
                 HashMap<String, String> newJob = new HashMap<>();
 
                 for (String headerLabel : headers) {
-                    newJob.put(headerLabel, record.get(headerLabel).toLowerCase(Locale.ROOT));
+                    newJob.put(headerLabel, record.get(headerLabel));
                 }
 
                 allJobs.add(newJob);
