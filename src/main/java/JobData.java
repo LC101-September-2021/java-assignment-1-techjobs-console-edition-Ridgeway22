@@ -5,10 +5,8 @@ import org.apache.commons.csv.CSVRecord;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by LaunchCode
@@ -20,6 +18,9 @@ public class JobData {
 
     private static ArrayList<HashMap<String, String>> allJobs;
 
+
+
+
     /**
      * Fetch list of all values from loaded data,
      * without duplicates, for a given column.
@@ -28,6 +29,7 @@ public class JobData {
      * @return List of all of the values of the given field
      */
     public static ArrayList<String> findAll(String field) {
+
 
         // load data, if not already loaded
         loadData();
@@ -77,7 +79,7 @@ public class JobData {
 
         for (HashMap<String, String> row : allJobs) {
 
-            String aValue = row.get(column);
+            String aValue = row.get(column).toLowerCase();
 
             if (aValue.contains(value)) {
                 jobs.add(row);
@@ -99,7 +101,20 @@ public class JobData {
         loadData();
 
         // TODO - implement this method
-        return null;
+        ArrayList<HashMap<String, String>> valueJobs = new ArrayList<>();
+
+        for (HashMap<String, String> row : allJobs) {
+            for (Map.Entry<String, String> entry : row.entrySet()) {
+                String aValue = entry.getValue().toLowerCase();
+                if (aValue.contains(value)) {
+                    if(!valueJobs.contains(row)) {
+                        valueJobs.add(row);
+                    }
+                }
+            }
+        }
+        return valueJobs;
+        //return null;
     }
 
     /**
@@ -118,6 +133,7 @@ public class JobData {
             Reader in = new FileReader(DATA_FILE);
             CSVParser parser = CSVFormat.RFC4180.withFirstRecordAsHeader().parse(in);
             List<CSVRecord> records = parser.getRecords();
+
             Integer numberOfColumns = records.get(0).size();
             String[] headers = parser.getHeaderMap().keySet().toArray(new String[numberOfColumns]);
 
@@ -125,6 +141,7 @@ public class JobData {
 
             // Put the records into a more friendly format
             for (CSVRecord record : records) {
+
                 HashMap<String, String> newJob = new HashMap<>();
 
                 for (String headerLabel : headers) {
